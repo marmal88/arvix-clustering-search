@@ -1,0 +1,9 @@
+networkx==2.8.8
+numpy==1.23.5
+pandas==1.5.2
+plotly==5.11.0
+sentence_transformers==2.2.2
+streamlit==1.15.1
+streamlit_plotly_events==0.0.6
+wordcloud==1.8.2.2
+lxml==4.9.1
