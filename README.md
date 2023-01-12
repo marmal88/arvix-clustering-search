@@ -1,7 +1,7 @@
-# Get Output from ArXiv Demystified (GOAD)
+# ArXiv Clustering Search
 
 A. Table of Contents
-- [Get Output from ArXiv Demystified (GOAD)](#get-output-from-arxiv-demystified-goad)
+- [ArXiv Clustering Search](#arxiv-clustering-search)
   - [A. Rationale For Application](#a-rationale-for-application)
   - [B. Application Deployment \& Folder Structure](#b-application-deployment--folder-structure)
     - [B.1 Application  Deployment](#b1-application--deployment)
