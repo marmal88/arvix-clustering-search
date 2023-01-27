@@ -1,6 +1,6 @@
 import urllib
 import pandas as pd
-from app_func.sentence_encoder import SentenceEncoder
+from src.app_func.sentence_encoder import SentenceEncoder
 
 
 class DataPipeline:
