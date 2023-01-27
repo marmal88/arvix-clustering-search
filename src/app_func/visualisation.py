@@ -9,7 +9,10 @@ from plotly import graph_objects as go
 class Visualisation:
     """Visualization graphs"""
 
-    def published_bar(dataframe: pd.DataFrame) -> go.Figure:
+    def __init__(self):
+        pass
+
+    def published_bar(self, dataframe: pd.DataFrame) -> go.Figure:
         """Bar chart to show published vs non published
         Args:
             dataframe (pd.DataFrame): Dataframe from API call
@@ -42,7 +45,7 @@ class Visualisation:
         # fig.update_layout(autosize=False, width=800, height=800)
         return fig
 
-    def num_words_title(dataframe: pd.DataFrame) -> go.Figure:
+    def num_words_title(self, dataframe: pd.DataFrame) -> go.Figure:
         """Number of words in 'Title' histogram
         Args:
             dataframe (pd.DataFrame): dataframe from API call
@@ -66,7 +69,7 @@ class Visualisation:
 
         return fig
 
-    def num_words_summary(dataframe: pd.DataFrame) -> go.Figure:
+    def num_words_summary(self, dataframe: pd.DataFrame) -> go.Figure:
         """Number of words in 'Summary' histogram
         Args:
             dataframe (pd.DataFrame): dataframe from API call
@@ -90,7 +93,7 @@ class Visualisation:
 
         return fig
 
-    def year_published(dataframe: pd.DataFrame) -> go.Figure:
+    def year_published(self, dataframe: pd.DataFrame) -> go.Figure:
         """Barplot to show year published
         Args:
             dataframe (pd.DataFrame): dataframe from API call
@@ -119,7 +122,7 @@ class Visualisation:
         )
         return fig
 
-    def generate_word_cloud(dataframe: pd.DataFrame) -> np.ndarray:
+    def generate_word_cloud(self, dataframe: pd.DataFrame) -> np.ndarray:
         """Word cloud words
         Args:
             dataframe (pd.DataFrame): dataframe from API call
@@ -145,7 +148,7 @@ class Visualisation:
 
         return wordcloud_image
 
-    def display_word_cloud(wordcloud_image: np.ndarray) -> go.Figure:
+    def display_word_cloud(self, wordcloud_image: np.ndarray) -> go.Figure:
         """Displays Word Cloud plot
         Args:
             wordcloud_image (np.ndarray): dataframe from API call
