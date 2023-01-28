@@ -59,7 +59,7 @@ class DataPipeline:
     def preprocessing_pipeline(self, df: pd.DataFrame) -> pd.DataFrame:
         """Preprocessing pipeline to clean up summary column
         Args:
-            df (pd.DataFrame): un preprocessed dataframe from arXiv
+            df (pd.DataFrame): preprocessed dataframe from arXiv
         Returns:
             pd.DataFrame: Pre-processed Dataframe
         """

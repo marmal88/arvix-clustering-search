@@ -5,16 +5,23 @@ import pandas as pd
 from src.app_func.datapipeline import DataPipeline
 
 
-@pytest.fixture
-def fixture_datapipeline(mocker):
-    return DataPipeline()
-
-
 def test_query_arxiv(mocker):
     def mock_load(self):
-        return pd.DataFrame()
+        return True, pd.DataFrame()
 
     mocker.patch("src.app_func.datapipeline.DataPipeline.query_arxiv", mock_load)
-    actual = DataPipeline().query_arxiv()
+    res, df = DataPipeline().query_arxiv()
 
-    pd.testing.assert_frame_equal(actual, pd.DataFrame())
+    assert isinstance(res, bool)
+    pd.testing.assert_frame_equal(df, pd.DataFrame())
+
+
+def test_dropna(mocker):
+    def mock_load(self):
+        return False, None
+
+    mocker.patch("src.app_func.datapipeline.DataPipeline.query_arxiv", mock_load)
+    res, df = DataPipeline().query_arxiv()
+
+    assert isinstance(res, bool)
+    assert df is None
