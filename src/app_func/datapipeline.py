@@ -1,5 +1,6 @@
 import urllib
 import pandas as pd
+from xml.dom.minidom import parseString
 from app_func.sentence_encoder import SentenceEncoder
 
 
@@ -11,10 +12,13 @@ class DataPipeline:
         method_name: str = "query",
         parameters: str = "search_query=all",
     ):
-        """Initializes Datapipeline object with Sentence Encoder as well as API keywords
+        """Initializes Datapipeline object with Sentence Encoder
+           as well as API keywords
         Args:
-            method_name (str, optional): Sets API query to query mode. Defaults to "query".
-            parameters (str, optional): Sets API query to search all arXiv. Defaults to "search_query=all".
+            method_name (str, optional): Sets API query to query mode.
+                                         Defaults to "query".
+            parameters (str, optional): Sets API query to search all arXiv.
+                                        Defaults to "search_query=all".
         """
         self.method_name = method_name
         self.encoder = SentenceEncoder()
@@ -24,16 +28,19 @@ class DataPipeline:
         """Function sends an API call to query arXiv
         Args:
             search_term (str): search term as defined by user
-            num_results (int): maximum number of search terms as defined by user
+            num_results (int): maximum number of search terms defined by user
         Returns:
             pd.DataFrame: returns a dataframe with parsed XML data from arXiv
         """
         search_term = search_term.replace(" ", "+")
 
         query = f"http://export.arxiv.org/api/{self.method_name}?{self.parameters}:{search_term}&start=0&max_results={num_results}"
-        dataframe = pd.read_xml(urllib.request.urlopen(query).read())
-
-        return dataframe
+        data = urllib.request.urlopen(query).read()
+        dom = parseString(data)
+        if len(dom.getElementsByTagName("id")) <= 1:
+            return False, None
+        dataframe = pd.read_xml(data)
+        return True, dataframe
 
     def dropna(self, df: pd.DataFrame) -> pd.DataFrame:
         """Function cleans up dataframe returned by arXiv.
@@ -52,16 +59,13 @@ class DataPipeline:
     def preprocessing_pipeline(self, df: pd.DataFrame) -> pd.DataFrame:
         """Preprocessing pipeline to clean up summary column
         Args:
-            df (pd.DataFrame): un preprocessed dataframe from arXiv
+            df (pd.DataFrame): preprocessed dataframe from arXiv
         Returns:
             pd.DataFrame: Pre-processed Dataframe
         """
         df = self.dropna(df)
-
-        # drop duplicates based on the summary column
         df = df.drop_duplicates(subset=["summary"])
 
-        # removes newline characters in title/summary
         df["summary"] = df["summary"].replace(
             {"\n": " ", "\\\\textbf{": "", "}": ""}, regex=True
         )
@@ -82,9 +86,12 @@ class DataPipeline:
             create embeddings and merging into subset of dataframe
         Args:
             df (pd.DataFrame): Dataframe from arXiv
-            col (str, optional): Identifies the summary column. Defaults to "summary".
-            num_encodings (int, optional): Slicer to use only first n papers to generate encodigns. Defaults to 50.
-            num_links (int, optional): Slicer to keep only top n links. Defaults to 50.
+            col (str, optional): Identifies the summary column.
+                                 Defaults to "summary".
+            num_encodings (int, optional): Slicer to use only first
+                    n papers to generate encodigns. Defaults to 50.
+            num_links (int, optional): Slicer to keep only top n links.
+                                       Defaults to 50.
         Returns:
             pd.DataFrame: Cosine Similarity scores with rankings
         """
@@ -95,7 +102,6 @@ class DataPipeline:
             titles=df.title,
         )
 
-        # merge href into cosine similarity dataframe
         href_df = df[["title", "id", "doi"]]
 
         cosine_dataframe = pd.merge(

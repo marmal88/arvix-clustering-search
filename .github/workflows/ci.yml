@@ -3,7 +3,7 @@ name: CI workflow
 on: [push]
 
 jobs:
-  builds:
+  linter:
     runs-on: ubuntu-latest
     steps:
      - name: Checkout code
