@@ -5,7 +5,7 @@ import pandas as pd
 from src.app_func.datapipeline import DataPipeline
 
 
-def test_query_arxiv(mocker):
+def test_query_arxiv_positive(mocker):
     def mock_load(self):
         return True, pd.DataFrame()
 
@@ -16,7 +16,7 @@ def test_query_arxiv(mocker):
     pd.testing.assert_frame_equal(df, pd.DataFrame())
 
 
-def test_dropna(mocker):
+def test_query_arxiv_negative(mocker):
     def mock_load(self):
         return False, None
 
