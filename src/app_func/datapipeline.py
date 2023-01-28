@@ -1,6 +1,7 @@
 import urllib
 import pandas as pd
-from src.app_func.sentence_encoder import SentenceEncoder
+from xml.dom.minidom import parseString
+from app_func.sentence_encoder import SentenceEncoder
 
 
 class DataPipeline:
@@ -34,9 +35,12 @@ class DataPipeline:
         search_term = search_term.replace(" ", "+")
 
         query = f"http://export.arxiv.org/api/{self.method_name}?{self.parameters}:{search_term}&start=0&max_results={num_results}"
-        dataframe = pd.read_xml(urllib.request.urlopen(query).read())
-
-        return dataframe
+        data = urllib.request.urlopen(query).read()
+        dom = parseString(data)
+        if len(dom.getElementsByTagName("id")) <= 1:
+            return False, None
+        dataframe = pd.read_xml(data)
+        return True, dataframe
 
     def dropna(self, df: pd.DataFrame) -> pd.DataFrame:
         """Function cleans up dataframe returned by arXiv.

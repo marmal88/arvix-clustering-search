@@ -21,39 +21,39 @@ def do_search():
     2) use Visualisation and Network to generate the plotly charts
     """
     with st.spinner("Performing search"):
-        start_time = time.time()
         connector = DataPipeline()
-        df = connector.query_arxiv(
+        res, df = connector.query_arxiv(
             st.session_state.search_term, st.session_state.num_searches
         )
+    if res is False:
+        st.error("Search did not produce any results. Please try again")
+    else:
+        with st.spinner("Calculating paper similarity"):
+            df = connector.preprocessing_pipeline(df)
+            cosine_df = connector.cosine_similarity_pipeline(
+                df,
+                num_encodings=st.session_state.num_papers,
+                num_links=st.session_state.num_links,
+            )
+            network = Network()
+            st.session_state.network_graph = network.plot_networkgraph(cosine_df)
 
-    with st.spinner("Calculating paper similarity"):
-        df = connector.preprocessing_pipeline(df)
-        cosine_df = connector.cosine_similarity_pipeline(
-            df,
-            num_encodings=st.session_state.num_papers,
-            num_links=st.session_state.num_links,
-        )
-        network = Network()
-        st.session_state.network_graph = network.plot_networkgraph(cosine_df)
-
-    with st.spinner("Generating word cloud and other visualizations"):
-        wc = Visualisation().generate_word_cloud(df)
-        st.session_state.word_cloud = Visualisation().display_word_cloud(wc)
-        st.session_state.df = df
-        (
-            st.session_state.labels,
-            st.session_state.network_graph,
-        ) = Network().plot_networkgraph(cosine_df)
-        wc = Visualisation().generate_word_cloud(df)
-        st.session_state.word_cloud = Visualisation().display_word_cloud(wc)
-        st.session_state.year_trend = Visualisation().year_published(df)
-        st.session_state.published_bar = Visualisation().published_bar(df)
+        with st.spinner("Generating word cloud and other visualizations"):
+            wc = Visualisation().generate_word_cloud(df)
+            st.session_state.word_cloud = Visualisation().display_word_cloud(wc)
+            st.session_state.df = df
+            (
+                st.session_state.labels,
+                st.session_state.network_graph,
+            ) = Network().plot_networkgraph(cosine_df)
+            wc = Visualisation().generate_word_cloud(df)
+            st.session_state.word_cloud = Visualisation().display_word_cloud(wc)
+            st.session_state.year_trend = Visualisation().year_published(df)
+            st.session_state.published_bar = Visualisation().published_bar(df)
 
 
 def display_graph():
     """handles the display of network graph"""
-    start_time = time.time()
     # st.plotly_chart(st.session_state.network_graph)
     selected_points = plotly_events(st.session_state.network_graph, click_event=True)
     print(selected_points)
@@ -67,24 +67,20 @@ def display_graph():
 
 def display_cloud():
     """handles the display of word cloud"""
-    start_time = time.time()
     st.plotly_chart(st.session_state.word_cloud)
 
 
 def display_year_trends():
     """handles the display of paper published over years trend"""
-    start_time = time.time()
     st.plotly_chart(st.session_state.year_trend, use_container_width=True)
 
 
 # @st.cache(suppress_st_warning=True)
 def display_published_bar():
     """handles the display of published vs non-published paper"""
-    start_time = time.time()
     st.plotly_chart(st.session_state.published_bar, use_container_width=True)
 
 
-load_start_time = time.time()
 st.title("ArXiv Clustering Search")
 with st.form(key="my_form"):
     st.text_input("Search term", key="search_term")
